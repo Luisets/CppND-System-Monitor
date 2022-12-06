@@ -3,6 +3,7 @@
 #include <dirent.h>
 #include <unistd.h>
 
+#include <cmath>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -89,8 +90,13 @@ float LinuxParser::MemoryUtilization() {
   return static_cast<float>(memTotal - memFree) / static_cast<float>(memTotal);
 }
 
-// TODO: Read and return the system uptime
-long LinuxParser::UpTime() { return 0; }
+// Read and return the system uptime
+long int LinuxParser::UpTime() {
+  float uptime;
+  std::ifstream stream(kProcDirectory + kUptimeFilename);
+  stream >> uptime;
+  return static_cast<long int>(std::round(uptime));
+}
 
 // TODO: Read and return the number of jiffies for the system
 long LinuxParser::Jiffies() { return 0; }
