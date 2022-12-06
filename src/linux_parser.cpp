@@ -105,13 +105,27 @@ long LinuxParser::Jiffies() { return 0; }
 // REMOVE: [[maybe_unused]] once you define the function
 long LinuxParser::ActiveJiffies(int pid [[maybe_unused]]) { return 0; }
 
-// TODO: Read and return the number of active jiffies for the system
-long LinuxParser::ActiveJiffies() { return 0; }
+// Read and return the number of active jiffies for the system
+long LinuxParser::ActiveJiffies() {
+  long user, nice, system, idle, iowait, irq, softirq, steal, guest, guest_nice;
+  std::string key;
+  std::ifstream stream(kProcDirectory + kStatFilename);
+  stream >> key >> user >> nice >> system >> idle >> iowait >> irq >> softirq >> steal >> guest >> guest_nice;
 
-// TODO: Read and return the number of idle jiffies for the system
-long LinuxParser::IdleJiffies() { return 0; }
+ return user + nice + system + irq + softirq + steal;
+}
 
-// TODO: Read and return CPU utilization
+// Read and return the number of idle jiffies for the system
+long LinuxParser::IdleJiffies() {
+  long user, nice, system, idle, iowait, irq, softirq, steal, guest, guest_nice;
+  std::string key;
+  std::ifstream stream(kProcDirectory + kStatFilename);
+  stream >> key >> user >> nice >> system >> idle >> iowait >> irq >> softirq >> steal >> guest >> guest_nice;
+ 
+ return idle + iowait;
+}
+
+// Read and return CPU utilization
 vector<string> LinuxParser::CpuUtilization() { return {}; }
 
 // Read and return the total number of processes
@@ -121,12 +135,10 @@ int LinuxParser::TotalProcesses() {
   std::string line;
   std::ifstream stream(kProcDirectory + kStatFilename);
 
-  while(std::getline(stream, line))
-  {
+  while (std::getline(stream, line)) {
     std::istringstream linestream(line);
     linestream >> key;
-    if(key == "processes")
-    {
+    if (key == "processes") {
       linestream >> value;
       break;
     }
@@ -142,12 +154,10 @@ int LinuxParser::RunningProcesses() {
   std::string line;
   std::ifstream stream(kProcDirectory + kStatFilename);
 
-  while(std::getline(stream, line))
-  {
+  while (std::getline(stream, line)) {
     std::istringstream linestream(line);
     linestream >> key;
-    if(key == "procs_running")
-    {
+    if (key == "procs_running") {
       linestream >> value;
       break;
     }
