@@ -1,3 +1,4 @@
+#include <unordered_map>
 #include <unistd.h>
 #include <cstddef>
 #include <set>
@@ -20,7 +21,11 @@ You need to properly format the uptime. Refer to the comments mentioned in forma
 Processor& System::Cpu() { return cpu_; }
 
 // TODO: Return a container composed of the system's processes
-vector<Process>& System::Processes() { return processes_; }
+vector<Process>& System::Processes() { 
+    auto pids = LinuxParser::Pids();
+    updateProccess(pids);
+    return processes_; 
+}
 
 // TODO: Return the system's kernel identifier (string)
 std::string System::Kernel() { return LinuxParser::Kernel(); }
@@ -39,3 +44,26 @@ int System::TotalProcesses() { return LinuxParser::TotalProcesses(); }
 
 // Return the number of seconds since the system started running
 long int System::UpTime() { return LinuxParser::UpTime(); }
+
+void System::updateProccess(std::vector<int> &pids)
+{
+    std::unordered_map<int, Process> processMap;
+    for (auto process : processes_)
+    {
+        processMap[process.Pid()] = process;
+    }
+
+    std::vector<Process> processesAlive;
+    for (auto pid : pids)
+    {
+        if (processMap.find(pid) != processMap.end())
+        {
+            processesAlive.emplace_back(processMap[pid]);
+        }
+        else
+        {
+            processesAlive.emplace_back(Process(pid));
+        }
+    }
+    processes_ = processesAlive;
+}

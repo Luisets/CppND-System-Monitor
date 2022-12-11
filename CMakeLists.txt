@@ -1,4 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
+
+# Enable debugger
+set(CMAKE_BUILD_TYPE Debug)
+
 project(monitor)
 
 find_package(Curses REQUIRED)
