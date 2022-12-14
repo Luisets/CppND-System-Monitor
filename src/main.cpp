@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "ncurses_display.h"
 #include "system.h"
 
