@@ -1,5 +1,4 @@
 #include "linux_parser.h"
-#include "utils.h"
 
 #include <dirent.h>
 #include <unistd.h>
@@ -9,6 +8,8 @@
 #include <sstream>
 #include <string>
 #include <vector>
+
+#include "utils.h"
 
 using std::stof;
 using std::string;
@@ -247,17 +248,18 @@ string LinuxParser::Ram(int pid) {
 string LinuxParser::Uid(int pid) {
   std::string line;
   std::string key;
-  int value = -1;
+  int value = 0;
   std::ifstream stream(kProcDirectory + std::to_string(pid) + kStatusFilename);
   if (stream.is_open()) {
     while (std::getline(stream, line)) {
       std::istringstream linestream(line);
       linestream >> key >> value;
       if (key == "Uid:") {
-        return std::to_string(value);
+        break;
       }
     }
   }
+  return std::to_string(value);
 }
 
 // Read and return the user associated with a process

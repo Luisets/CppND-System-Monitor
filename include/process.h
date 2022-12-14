@@ -11,6 +11,7 @@ class Process {
   Process() = default;
   Process(int pid, long systemTime);
   Process(const Process& process);
+  Process& operator=(const Process&) = default;
   int Pid();
   std::string User();
   std::string Command();
